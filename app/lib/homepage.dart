@@ -13,7 +13,6 @@ class _HomePageState extends State<HomePage> {
   final String phone = '+80911119'; // Replace with phone number
   final String instagramUrl = 'https://instagram.com/raedfidawi_'; // Instagram URL
   final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90'; // Location URL
-  final int color = 0xFFD700;
   bool isSignIn = true; // Track whether to show sign-in or sign-up form
 
   @override
@@ -29,7 +28,6 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 30),
-              // Logo section with responsive size
               Container(
                 width: logoSize,
                 height: logoSize,
@@ -51,32 +49,39 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 20),
               // Shiny Title
               Shimmer.fromColors(
-                baseColor: Color(0xFFAD9C00), // Darker gold
-                highlightColor: Color(0xFFFFD700), // Lighter gold
+                baseColor: Color(0xFFC7A00A), // Rich gold base
+                highlightColor: Color(0xFFFFE066), // Bright gold highlight
                 child: Text(
                   'JFIT STUDIO',
                   style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w300, // Lighter weight for elegance
-                    fontStyle: FontStyle.italic, // Makes the text italic
-                    color: Colors.white, // Use white or transparent for shimmer effect
-                    letterSpacing: 1.5, // Slightly increased spacing for a fancier look
+                    fontSize: 30,
+                    // fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ),
               SizedBox(height: 30),
-              // Container for info cards with shiny gold background
+              // Gold Gradient Info Card
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFFD4AF37), // Base gold color
-                      Color(0xFFFFD700), // Highlight gold color
+                      Color(0xFFB8860B), // Darker shade of gold
+                      Color(0xFFFFD700), // True gold
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
                 ),
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -84,28 +89,27 @@ class _HomePageState extends State<HomePage> {
                     _buildInfoCard(
                       icon: Icons.location_on,
                       text: 'Google Maps',
-                      color: Color(0xffad9c00),
+                      color: Color(0xffD4AF37), // Gold icon color
                       onTap: () => _launchURL(locationUrl),
                     ),
                     SizedBox(height: 15),
                     _buildInfoCard(
                       icon: Icons.phone,
                       text: phone,
-                      color: Color(0xffad9c00),
+                      color: Color(0xffD4AF37),
                       onTap: () => _launchPhone(phone),
                     ),
                     SizedBox(height: 15),
                     _buildInfoCard(
                       icon: Icons.camera_alt,
                       text: 'Instagram Page',
-                      color: Color(0xffad9c00),
+                      color: Color(0xffD4AF37),
                       onTap: () => _launchURL(instagramUrl),
                     ),
                   ],
                 ),
               ),
               SizedBox(height: 30),
-              // Toggle for Sign-In and Sign-Up forms
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -118,7 +122,6 @@ class _HomePageState extends State<HomePage> {
               // Display form based on `isSignIn` state
               isSignIn ? _buildSignInForm() : _buildSignUpForm(),
               SizedBox(height: 30),
-              // Footer or extra branding
               Text(
                 'By Harajli',
                 style: TextStyle(
@@ -134,7 +137,210 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Reusable link card
+
+Widget _buildFormToggleButton(String text, bool signIn) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: () => setState(() => isSignIn = signIn),
+      borderRadius: BorderRadius.circular(8),
+      splashColor: Colors.white24, // Light splash effect when button is pressed
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFB8860B), // Darker shade of gold
+              Color(0xFFFFD700), // True gold
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+  // Sign-In form
+Widget _buildSignInForm() {
+  return Column(
+    children: [
+      TextField(
+        decoration: InputDecoration(
+          labelText: 'Email',
+          labelStyle: TextStyle(color: Color(0xffad9c00)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
+          ),
+        ),
+      ),
+      SizedBox(height: 10),
+      TextField(
+        decoration: InputDecoration(
+          labelText: 'Password',
+          labelStyle: TextStyle(color: Color(0xffad9c00)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
+          ),
+        ),
+        obscureText: true,
+      ),
+      SizedBox(height: 20),
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(8),
+          splashColor: Colors.white24, // Light splash effect when button is pressed
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFB8860B), // Darker shade of gold
+                  Color(0xFFFFD700), // True gold
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                'Sign In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+// Sign-Up form
+Widget _buildSignUpForm() {
+  return Column(
+    children: [
+      TextField(
+        decoration: InputDecoration(
+          labelText: 'Name',
+          labelStyle: TextStyle(color: Color(0xffad9c00)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
+          ),
+        ),
+      ),
+      SizedBox(height: 10),
+      TextField(
+        decoration: InputDecoration(
+          labelText: 'Email',
+          labelStyle: TextStyle(color: Color(0xffad9c00)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
+          ),
+        ),
+      ),
+      SizedBox(height: 10),
+      TextField(
+        decoration: InputDecoration(
+          labelText: 'Password',
+          labelStyle: TextStyle(color: Color(0xffad9c00)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
+          ),
+        ),
+        obscureText: true,
+      ),
+      SizedBox(height: 20),
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(8),
+          splashColor: Colors.white24, // Light splash effect when button is pressed
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFB8860B), // Darker shade of gold
+                  Color(0xFFFFD700), // True gold
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                'Sign Up',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
   Widget _buildInfoCard({required IconData icon, required String text, required Color color, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -166,122 +372,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Form toggle button
-  Widget _buildFormToggleButton(String text, bool signIn) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSignIn == signIn ? Color(0xffad9c00) : Colors.grey[700],
-      ),
-      onPressed: () => setState(() => isSignIn = signIn),
-      child: Text(text, style: TextStyle(color: Colors.white)),
-    );
-  }
-
-  // Sign-In form
-  Widget _buildSignInForm() {
-    return Column(
-      children: [
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Email',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Password',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-            ),
-          ),
-          obscureText: true,
-        ),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {},
-          child: Text('Sign In'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xffad9c00),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Sign-Up form
-  Widget _buildSignUpForm() {
-    return Column(
-      children: [
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Name',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Email',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Password',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-            ),
-          ),
-          obscureText: true,
-        ),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {},
-          child: Text('Sign Up'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xffad9c00),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Function to launch URL
   Future<void> _launchURL(String url) async {
     if (!await launchUrlString(url)) {
       throw 'Could not launch $url';
     }
   }
 
-  // Function to launch phone dialer
   Future<void> _launchPhone(String phone) async {
     final Uri launchUri = Uri(scheme: 'tel', path: phone);
     if (!await launchUrl(launchUri)) {
