@@ -9,15 +9,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final String logoUrl = 'assets/logonn.jpeg'; // Path to logo
-  final String phone = '+80911119'; // Replace with phone number
-  final String instagramUrl = 'https://instagram.com/raedfidawi_'; // Instagram URL
-  final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90'; // Location URL
-  bool isSignIn = true; // Track whether to show sign-in or sign-up form
+  final String logoUrl = 'assets/logonn.jpeg';
+  final String phone = '+80911119';
+  final String instagramUrl = 'https://instagram.com/raedfidawi_'; 
+  final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90';
+  bool isSignIn = true;
 
   @override
   Widget build(BuildContext context) {
-    final double logoSize = MediaQuery.of(context).size.width * 0.3; // 30% of screen width
+    final double logoSize = MediaQuery.of(context).size.width * 0.3;
 
     return Scaffold(
       backgroundColor: Colors.black,
