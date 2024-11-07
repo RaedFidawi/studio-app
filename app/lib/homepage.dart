@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'user_api.dart';
+import 'reservation.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,6 +16,45 @@ class _HomePageState extends State<HomePage> {
   final String instagramUrl = 'https://instagram.com/raedfidawi_'; 
   final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90';
   bool isSignIn = true;
+
+  final TextEditingController _signInUsernameController = TextEditingController();
+  final TextEditingController _signInPasswordController = TextEditingController();
+
+
+  final TextEditingController _signUpEmailController = TextEditingController();
+  final TextEditingController _signUpUsernameController = TextEditingController();
+  final TextEditingController _signUpPasswordController = TextEditingController();
+  final TextEditingController _signUpNumberController = TextEditingController();
+
+  // Method to handle Sign In
+  Future<void> _handleSignIn() async {
+    try {
+      final response = await UserAPI.signIn(
+        username: _signInUsernameController.text,
+        password: _signInPasswordController.text,
+      );
+      // Handle successful sign-in, such as saving token or navigating
+      print('Sign-In Success: $response');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // Method to handle Sign Up
+  Future<void> _handleSignUp() async {
+    try {
+      final response = await UserAPI.signUp(
+        email: _signUpEmailController.text,
+        username: _signUpUsernameController.text,
+        password: _signUpPasswordController.text,
+        number: _signUpNumberController.text,
+      );
+      // Handle successful sign-up, such as saving token or navigating
+      print('Sign-Up Success: $response');
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,164 +223,141 @@ Widget _buildFormToggleButton(String text, bool signIn) {
 
   // Sign-In form
 Widget _buildSignInForm() {
-  return Column(
-    children: [
-      TextField(
-        decoration: InputDecoration(
-          labelText: 'Email',
-          labelStyle: TextStyle(color: Color(0xffad9c00)),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-          ),
-        ),
-      ),
-      SizedBox(height: 10),
-      TextField(
-        decoration: InputDecoration(
-          labelText: 'Password',
-          labelStyle: TextStyle(color: Color(0xffad9c00)),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-          ),
-        ),
-        obscureText: true,
-      ),
-      SizedBox(height: 20),
-      Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {},
-          borderRadius: BorderRadius.circular(8),
-          splashColor: Colors.white24, // Light splash effect when button is pressed
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFFB8860B), // Darker shade of gold
-                  Color(0xFFFFD700), // True gold
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-                ),
-              ],
+    return Column(
+      children: [
+        TextField(
+          controller: _signInUsernameController,
+          decoration: InputDecoration(
+            labelText: 'Username',
+            labelStyle: TextStyle(color: Color(0xffad9c00)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffad9c00)),
             ),
-            child: Center(
-              child: Text(
-                'Sign In',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 10),
+        TextField(
+          controller: _signInPasswordController,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            labelStyle: TextStyle(color: Color(0xffad9c00)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffad9c00)),
+            ),
+          ),
+          obscureText: true,
+        ),
+        SizedBox(height: 20),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _handleSignIn,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  'Sign In',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
-// Sign-Up form
-Widget _buildSignUpForm() {
-  return Column(
-    children: [
-      TextField(
-        decoration: InputDecoration(
-          labelText: 'Name',
-          labelStyle: TextStyle(color: Color(0xffad9c00)),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-          ),
-        ),
-      ),
-      SizedBox(height: 10),
-      TextField(
-        decoration: InputDecoration(
-          labelText: 'Email',
-          labelStyle: TextStyle(color: Color(0xffad9c00)),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-          ),
-        ),
-      ),
-      SizedBox(height: 10),
-      TextField(
-        decoration: InputDecoration(
-          labelText: 'Password',
-          labelStyle: TextStyle(color: Color(0xffad9c00)),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffad9c00), width: 2),
-          ),
-        ),
-        obscureText: true,
-      ),
-      SizedBox(height: 20),
-      Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {},
-          borderRadius: BorderRadius.circular(8),
-          splashColor: Colors.white24, // Light splash effect when button is pressed
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFFB8860B), // Darker shade of gold
-                  Color(0xFFFFD700), // True gold
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-                ),
-              ],
+  // Sign-Up form with logic
+  Widget _buildSignUpForm() {
+    return Column(
+      children: [
+        TextField(
+          controller: _signUpUsernameController,
+          decoration: InputDecoration(
+            labelText: 'Username',
+            labelStyle: TextStyle(color: Color(0xffad9c00)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffad9c00)),
             ),
-            child: Center(
-              child: Text(
-                'Sign Up',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 10),
+        TextField(
+          controller: _signUpEmailController,
+          decoration: InputDecoration(
+            labelText: 'Email',
+            labelStyle: TextStyle(color: Color(0xffad9c00)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffad9c00)),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        TextField(
+          controller: _signUpPasswordController,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            labelStyle: TextStyle(color: Color(0xffad9c00)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffad9c00)),
+            ),
+          ),
+          obscureText: true,
+        ),
+        SizedBox(height: 10),
+        TextField(
+          controller: _signUpNumberController,
+          decoration: InputDecoration(
+            labelText: 'Phone Number',
+            labelStyle: TextStyle(color: Color(0xffad9c00)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffad9c00)),
+            ),
+          ),
+        ),
+        SizedBox(height: 20),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _handleSignUp,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildInfoCard({required IconData icon, required String text, required Color color, required VoidCallback onTap}) {
     return GestureDetector(
