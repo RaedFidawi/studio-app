@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   url_launcher: ^6.0.20
   shimmer: ^2.0.0
+  http: ^1.2.2
 
 
   # The following adds the Cupertino Icons font to your application.
