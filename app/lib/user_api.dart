@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class UserAPI {
   // The base URL of your API (change this to the actual URL of your API)
-  static const String baseUrl = 'http://10.0.2.2:5000';  // Replace with your actual API URL
+  static const String baseUrl = 'http://127.0.0.1:5000';  // Replace with your actual API URL
 
   // Sign Up API
   static Future<Map<String, dynamic>> signUp({
