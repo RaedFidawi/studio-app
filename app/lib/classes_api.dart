@@ -90,4 +90,26 @@ class ClassesAPI {
       throw Exception('Error fetching classes: $e');
     }
   }
+
+  static Future<Map<String, dynamic>> reserveClass({
+    required String userId,
+    required String classId,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/reserve_class'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'user_id': userId,
+        'class_id': classId,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);  // Return response data if success
+    } else {
+      throw Exception('Failed to reserve class: ${response.body}');
+    }
+  }
 }

@@ -201,6 +201,7 @@ class _ReservationPageState extends State<ReservationPage> {
   @override
   void initState() {
     super.initState();
+    print("User Info: ${widget.userInfo['user_id']}"); 
     fetchClasses();
   }
 
@@ -220,7 +221,7 @@ class _ReservationPageState extends State<ReservationPage> {
   //   }
   // }
   Future<void> fetchClasses() async {
-    final String token = widget.userInfo['token']; // Assume token is stored in userInfo
+    final String token = widget.userInfo['token']; // Assume token is stored in userInfo 
     try {
       List<Map<String, dynamic>> fetchedClasses = await ClassesAPI.getClasses(token: token);
 
@@ -319,7 +320,6 @@ class ReservationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Color statusColor = session.hasSpace ? Colors.green : Colors.red;
     String statusText = session.hasSpace ? "Available" : "Full";
-
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(

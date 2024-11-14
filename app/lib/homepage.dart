@@ -54,6 +54,8 @@ class _HomePageState extends State<HomePage> {
     
     // sign out
     //   await storage.delete(key: 'userToken');
+    //   await storage.delete(key: 'username');
+    //   await storage.delete(key: 'user_id');
     //   setState(() {
     //    _isSignedIn = false;  // Default to false if no value is found
     // });
@@ -61,12 +63,13 @@ class _HomePageState extends State<HomePage> {
 
     String? token = await storage.read(key: 'userToken');
     String? username = await storage.read(key: 'username');
+    String? userId = await storage.read(key: 'user_id');
     // print(token);
     
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ReservationPage(userInfo: {'username': username, 'token': token}),
+          builder: (context) => ReservationPage(userInfo: {'username': username, 'token': token, 'user_id': userId}),
         ),
       );
   }
@@ -87,7 +90,6 @@ void _checkSignInStatus() async {
   });
 }
 
-  // Method to handle Sign In
   Future<void> _handleSignIn() async {
   try {
     final response = await UserAPI.signIn(
@@ -95,11 +97,11 @@ void _checkSignInStatus() async {
       password: _signInPasswordController.text,
     );
 
-    // Assuming `response` includes a token and username
     if (response['token'] != null) {
-      // Store the token locally
+      // Store the token, username, and user_id locally
       await storage.write(key: 'userToken', value: response['token']);
       await storage.write(key: 'username', value: _signInUsernameController.text);
+      await storage.write(key: 'user_id', value: response['user_id'].toString());
 
       setState(() {
         _isSignedIn = true;
@@ -107,12 +109,17 @@ void _checkSignInStatus() async {
       _saveSignInState(true);
 
       // Redirect to ReservationPage with user data
+
+    _signInUsernameController.clear();
+    _signInPasswordController.clear();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ReservationPage(userInfo: {
             'username': _signInUsernameController.text,
             'token': response['token'],
+            'user_id': response['user_id']
           }),
         ),
       );
@@ -135,6 +142,8 @@ Future<void> _handleSignUp() async {
 
     // Assuming `response` includes a token and username
     if (response['token'] != null) {
+
+      await storage.write(key: 'user_id', value: response['user_id'].toString());
       await storage.write(key: 'userToken', value: response['token']);
       await storage.write(key: 'username', value: _signUpUsernameController.text);
 
@@ -143,12 +152,18 @@ Future<void> _handleSignUp() async {
       });
       _saveSignInState(true);
 
+    _signUpEmailController.clear();
+    _signUpNumberController.clear();
+    _signUpUsernameController.clear();
+    _signUpPasswordController.clear();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ReservationPage(userInfo: {
             'username': _signUpUsernameController.text,
             'token': response['token'],
+            'user_id': response['user_id']
           }),
         ),
       );
@@ -270,7 +285,7 @@ Widget build(BuildContext context) {
               ),
               child: Center(
                 child: Text(
-                  'View Reservation Page',
+                  'View Class',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
