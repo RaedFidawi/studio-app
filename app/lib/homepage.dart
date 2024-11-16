@@ -8,6 +8,7 @@ import 'user_api.dart';
 import 'reservation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'classes.dart'; 
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final storage = FlutterSecureStorage(); // Secure storage for token
   final String logoUrl = 'assets/logonn.jpeg';
-  final String phone = '+96180911119';
+  final String phone = '+1-555-010-999';
   final String instagramUrl = 'https://instagram.com/raedfidawi_'; 
   final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90';
 
@@ -50,6 +51,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _goToClasses() async {
+    String? token = await storage.read(key: 'userToken');
+    String? username = await storage.read(key: 'username');
+    String? userId = await storage.read(key: 'user_id');
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Classes(userInfo: {'username': username, 'token': token, 'user_id': userId}),
+        ),
+      );
+  }
+
   void _goToReservationPage() async{
     
     // sign out
@@ -72,6 +86,16 @@ class _HomePageState extends State<HomePage> {
           builder: (context) => ReservationPage(userInfo: {'username': username, 'token': token, 'user_id': userId}),
         ),
       );
+  }
+
+  void _signOut() async{
+      await storage.delete(key: 'userToken');
+      await storage.delete(key: 'username');
+      await storage.delete(key: 'user_id');
+      setState(() {
+       _isSignedIn = false;  // Default to false if no value is found
+    });
+    _saveSignInState(false);
   }
 
   void _saveSignInState(bool isSignedIn) {
@@ -110,6 +134,10 @@ void _checkSignInStatus() async {
 
       // Redirect to ReservationPage with user data
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Center(child: Text('Welcome ${_signInUsernameController.text}'))),
+      );
+
     _signInUsernameController.clear();
     _signInPasswordController.clear();
 
@@ -125,6 +153,9 @@ void _checkSignInStatus() async {
       );
     }
   } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Center(child: Text('Failed to Log in'))),
+      );
     print(e);
   }
 }
@@ -152,6 +183,10 @@ Future<void> _handleSignUp() async {
       });
       _saveSignInState(true);
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Center(child: Text('Welcome ${_signUpUsernameController.text}'))),
+      );
+
     _signUpEmailController.clear();
     _signUpNumberController.clear();
     _signUpUsernameController.clear();
@@ -169,6 +204,9 @@ Future<void> _handleSignUp() async {
       );
     }
   } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Center(child: Text('Failed to register'))),
+      );
     print(e);
   }
 }
@@ -213,7 +251,7 @@ Widget build(BuildContext context) {
                 'JFIT STUDIO',
                 style: TextStyle(
                   fontSize: 30,
-                  fontStyle: FontStyle.italic,
+                  // fontStyle: FontStyle.italic,
                   color: Colors.white,
                   letterSpacing: 1.5,
                 ),
@@ -269,45 +307,106 @@ Widget build(BuildContext context) {
             SizedBox(height: 30),
             // Conditional Rendering based on Sign-in Status
             if (_isSignedIn)
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: _goToReservationPage,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  'View Class',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            Column(children: [
+              Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _goToReservationPage,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'View Classes',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            Padding(padding: const EdgeInsets.all(3.0)),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _goToClasses,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'View My Classes',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(padding: const EdgeInsets.all(3.0)),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _signOut,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color.fromARGB(255, 184, 11, 11), Color.fromARGB(255, 255, 81, 0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Sign Out',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ]
         )
             else
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildFormToggleButton("Sign In", true),
-                  SizedBox(width: 20),
-                  _buildFormToggleButton("Sign Up", false),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     _buildFormToggleButton("Sign In", true),
+              //     // SizedBox(width: 20),
+              //     // _buildFormToggleButton("Sign Up", false),
+              //   ],
+              // ),
             SizedBox(height: 20),
             // Display form based on `isSignIn` state
-            if (!_isSignedIn) (isSignIn ? _buildSignInForm() : _buildSignUpForm()),
+            // if (!_isSignedIn) (isSignIn ? _buildSignInForm() : _buildSignUpForm()),
+            if(!_isSignedIn)
+            _buildSignInForm(),
             SizedBox(height: 30),
             Text(
               'By Harajli',
@@ -428,88 +527,88 @@ Widget _buildSignInForm() {
   }
 
   // Sign-Up form with logic
-  Widget _buildSignUpForm() {
-    return Column(
-      children: [
-        TextField(
-          controller: _signUpUsernameController,
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            labelText: 'Username',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          controller: _signUpEmailController,
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            labelText: 'Email',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          controller: _signUpPasswordController,
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            labelText: 'Password',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-          ),
-          obscureText: true,
-        ),
-        SizedBox(height: 10),
-        TextField(
-          controller: _signUpNumberController,
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            labelText: 'Phone Number',
-            labelStyle: TextStyle(color: Color(0xffad9c00)),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffad9c00)),
-            ),
-          ),
-        ),
-        SizedBox(height: 20),
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: _handleSignUp,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildSignUpForm() {
+  //   return Column(
+  //     children: [
+  //       TextField(
+  //         controller: _signUpUsernameController,
+  //         style: TextStyle(color: Colors.white),
+  //         decoration: InputDecoration(
+  //           labelText: 'Username',
+  //           labelStyle: TextStyle(color: Color(0xffad9c00)),
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(color: Color(0xffad9c00)),
+  //           ),
+  //         ),
+  //       ),
+  //       SizedBox(height: 10),
+  //       TextField(
+  //         controller: _signUpEmailController,
+  //         style: TextStyle(color: Colors.white),
+  //         decoration: InputDecoration(
+  //           labelText: 'Email',
+  //           labelStyle: TextStyle(color: Color(0xffad9c00)),
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(color: Color(0xffad9c00)),
+  //           ),
+  //         ),
+  //       ),
+  //       SizedBox(height: 10),
+  //       TextField(
+  //         controller: _signUpPasswordController,
+  //         style: TextStyle(color: Colors.white),
+  //         decoration: InputDecoration(
+  //           labelText: 'Password',
+  //           labelStyle: TextStyle(color: Color(0xffad9c00)),
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(color: Color(0xffad9c00)),
+  //           ),
+  //         ),
+  //         obscureText: true,
+  //       ),
+  //       SizedBox(height: 10),
+  //       TextField(
+  //         controller: _signUpNumberController,
+  //         style: TextStyle(color: Colors.white),
+  //         decoration: InputDecoration(
+  //           labelText: 'Phone Number',
+  //           labelStyle: TextStyle(color: Color(0xffad9c00)),
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(color: Color(0xffad9c00)),
+  //           ),
+  //         ),
+  //       ),
+  //       SizedBox(height: 20),
+  //       Material(
+  //         color: Colors.transparent,
+  //         child: InkWell(
+  //           onTap: _handleSignUp,
+  //           child: Container(
+  //             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+  //             decoration: BoxDecoration(
+  //               gradient: LinearGradient(
+  //                 colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
+  //                 begin: Alignment.topLeft,
+  //                 end: Alignment.bottomRight,
+  //               ),
+  //               borderRadius: BorderRadius.circular(8),
+  //             ),
+  //             child: Center(
+  //               child: Text(
+  //                 'Sign Up',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 16,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildInfoCard({required IconData icon, required String text, required Color color, required VoidCallback onTap}) {
     return GestureDetector(
@@ -549,7 +648,8 @@ Widget _buildSignInForm() {
   }
 
   Future<void> _launchPhone(String phone) async {
-    final Uri launchUri = Uri(scheme: 'tel', path: phone);
+    String url = 'tel://$phone'; //: 'tel:$phone';
+    final Uri launchUri = Uri(scheme: 'tel', path: url);
     if (!await launchUrl(launchUri)) {
       throw 'Could not launch $phone';
     }

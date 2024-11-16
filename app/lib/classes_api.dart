@@ -112,4 +112,70 @@ class ClassesAPI {
       throw Exception('Failed to reserve class: ${response.body}');
     }
   }
+
+  static Future<List<Map<String, dynamic>>> fetchUserClasses({
+    required String token,
+    required String userId,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/get_user_reservations/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data.containsKey('reserved_classes') && data['reserved_classes'] is List) {
+          List<Map<String, dynamic>> classes = List<Map<String, dynamic>>.from(data['reserved_classes']);
+
+          // Decode each class image if present
+          for (var cls in classes) {
+            if (cls.containsKey('image') && cls['image'] is String) {
+              String base64Image = cls['image'];
+              Uint8List decodedImage = base64Decode(base64Image);
+              cls['decoded_image'] = decodedImage;
+            }
+          }
+
+          return classes;
+        } else {
+          throw Exception('Invalid data format: No "reserved_classes" key in response');
+        }
+      } else {
+        throw Exception('Failed to fetch user-reserved classes: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching user-reserved classes: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> removeClass(String userId, String classId) async {
+    // Prepare the data for the request
+    final Map<String, dynamic> requestData = {
+      'user_id': userId,
+      'class_id': classId,
+    };
+
+    // Make the HTTP POST request to the backend
+    final response = await http.post(
+      Uri.parse('$baseUrl/remove_class'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(requestData),
+    );
+
+    // Check the response status code
+    if (response.statusCode == 200) {
+      // If successful, return the parsed JSON response
+      return json.decode(response.body);
+    } else {
+      // If error occurs, return the error message
+      return {'error': 'Failed to remove class from reservation'};
+    }
+  }
 }
