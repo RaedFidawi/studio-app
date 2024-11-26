@@ -9,6 +9,7 @@ import 'reservation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'classes.dart'; 
+import 'prices.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -86,6 +87,19 @@ class _HomePageState extends State<HomePage> {
           builder: (context) => ReservationPage(userInfo: {'username': username, 'token': token, 'user_id': userId}),
         ),
       );
+  }
+
+    void _goToPrices() async {
+    String? token = await storage.read(key: 'userToken');
+    String? username = await storage.read(key: 'username');
+    String? userId = await storage.read(key: 'user_id');
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Prices(userInfo: {'username': username, 'token': token, 'user_id': userId}),
+      ),
+    );
   }
 
   void _signOut() async{
@@ -210,6 +224,37 @@ Future<void> _handleSignUp() async {
     print(e);
   }
 }
+
+Future<void> _deleteUser() async {
+    try {
+      String? userId = await storage.read(key: 'user_id');
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user ID found. Please sign in again.')),
+        );
+        return;
+      }
+
+      bool success = await UserAPI.deleteUser(userId);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User deleted successfully.')),
+        );
+
+        // Optionally sign out and navigate back to login page
+        _signOut();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete user.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error occurred: $e')),
+      );
+      print(e);
+    }
+  }
 
   @override
 Widget build(BuildContext context) {
@@ -367,6 +412,34 @@ Widget build(BuildContext context) {
             Material(
               color: Colors.transparent,
               child: InkWell(
+                onTap: _goToPrices,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFB8860B), Color(0xFFFFD700)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'View Prices',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(padding: const EdgeInsets.all(3.0)),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
                 onTap: _signOut,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
@@ -381,6 +454,33 @@ Widget build(BuildContext context) {
                   child: Center(
                     child: Text(
                       'Sign Out',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),Padding(padding: const EdgeInsets.all(3.0)),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _deleteUser,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color.fromARGB(255, 184, 11, 11), Color.fromARGB(255, 255, 81, 0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Delete Account',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

@@ -43,7 +43,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class ClassesAPI {
-  static const String baseUrl = 'http://127.0.0.1:5000'; // Make sure to adjust this URL
+  // static const String baseUrl = 'http://127.0.0.1:5000'; // Make sure to adjust this URL
+  static const String baseUrl = "lsltranslator.pythonanywhere.com";
 
   // Function to get classes from the API and decode image data
   static Future<List<Map<String, dynamic>>> getClasses({

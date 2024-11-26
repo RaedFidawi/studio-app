@@ -195,8 +195,10 @@ class ReservationPage extends StatefulWidget {
 
 class _ReservationPageState extends State<ReservationPage> {
   List<Map<String, dynamic>> classes = [];
+  List<Map<String, dynamic>> filteredClasses = [];
   bool isLoading = true;
   String errorMessage = '';
+  String selectedDay = ''; // Selected day filter (e.g., "Monday")
 
   @override
   void initState() {
@@ -215,6 +217,7 @@ class _ReservationPageState extends State<ReservationPage> {
 
       setState(() {
         classes = fetchedClasses;
+        filteredClasses = fetchedClasses; // Initially, show all classes
         isLoading = false;
       });
     } catch (e) {
@@ -225,17 +228,125 @@ class _ReservationPageState extends State<ReservationPage> {
     }
   }
 
+  void filterClassesByDay(String day) {
+    setState(() {
+      selectedDay = day;
+      filteredClasses = day.isEmpty
+          ? classes
+          : classes.where((classData) => classData['day'].contains(day)).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text(
+          "Classes",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.black,
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : errorMessage.isNotEmpty
+              ? Center(child: Text(errorMessage, style: TextStyle(color: Colors.red)))
+              : Column(
+                  children: [
+                    _buildWeekdaySelector(),
+                    Expanded(child: _buildClassList()),
+                  ],
+                ),
+    );
+  }
+
+  Widget _buildWeekdaySelector() {
+    const List<String> weekdays = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      color: Colors.grey[900],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: weekdays.map((day) {
+            bool isSelected = selectedDay == day;
+            return GestureDetector(
+              onTap: () => filterClassesByDay(isSelected ? '' : day),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.amber : Colors.grey[800],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                child: Text(
+                  day,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildClassList() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: filteredClasses.map((classData) {
+          Uint8List? image = classData['decoded_image'];
+          String classId = classData['_id'];
+
+          return GestureDetector(
+            onTap: () => _showConfirmationDialog(context, classId),
+            child: ReservationCard(
+              session: ReservationSession(
+                name: classData['name'],
+                time: classData['time'],
+                hasSpace: classData['available'],
+                image: image,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Future<void> _confirmReservation(String classId) async {
     final userId = widget.userInfo['user_id'];
 
     try {
       final response = await ClassesAPI.reserveClass(userId: userId, classId: classId);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center(child: Text('Reservation confirmed: ${response['message']}'))),
+        SnackBar(content: Text('Reservation confirmed: ${response['message']}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center(child: Text('Failed to reserve class'))),
+        SnackBar(content: Text('Failed to reserve class')),
       );
     }
   }
@@ -266,55 +377,10 @@ class _ReservationPageState extends State<ReservationPage> {
       },
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text(
-          "Classes",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.black,
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : errorMessage.isNotEmpty
-              ? Center(child: Text(errorMessage, style: TextStyle(color: Colors.red)))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: classes.map((classData) {
-                      Uint8List? image = classData['decoded_image'];
-                      String classId = classData['_id'];  // Assuming classData contains an 'id' key
-
-                      return GestureDetector(
-                        onTap: () => _showConfirmationDialog(context, classId),
-                        child: ReservationCard(
-                          session: ReservationSession(
-                            name: classData['name'],
-                            time: classData['time'],
-                            hasSpace: classData['available'],
-                            image: image,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-    );
-  }
 }
-
 class ReservationSession {
   final String name;
-  final String time;
+  final List<dynamic> time; // Changed to List<dynamic>
   final bool hasSpace;
   final Uint8List? image;
 
@@ -335,6 +401,10 @@ class ReservationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Color statusColor = session.hasSpace ? Colors.green : Colors.red;
     String statusText = session.hasSpace ? "Available" : "Full";
+
+    // Convert List<dynamic> to a user-friendly string representation
+    String formattedTime = session.time.map((e) => e.toString()).join(", ");
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
@@ -360,6 +430,7 @@ class ReservationCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         elevation: 3,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // Align content to the start
           children: [
             session.image != null
                 ? ClipRRect(
@@ -376,57 +447,31 @@ class ReservationCard extends StatelessWidget {
                     ),
                   )
                 : Container(),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    session.name,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          session.name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          session.time,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          statusText,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 8.0, // Space between chips
+                          runSpacing: 4.0, // Space between lines
+                          children: [
+                            _buildChip('Time: $formattedTime', Colors.black),
+                            _buildChip(statusText, statusColor),
+                          ],
                         ),
                       ),
                     ],
@@ -437,6 +482,16 @@ class ReservationCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildChip(String label, Color color) {
+    return Chip(
+      label: Text(
+        label,
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: color.withOpacity(0.8),
     );
   }
 }

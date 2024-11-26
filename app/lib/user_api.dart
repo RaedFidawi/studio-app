@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 
 class UserAPI {
   // The base URL of your API (change this to the actual URL of your API)
-  static const String baseUrl = 'http://127.0.0.1:5000';  // Replace with your actual API URL
+  // static const String baseUrl = 'http://127.0.0.1:5000';  // Replace with your actual API URL
+  static const String baseUrl = "lsltranslator.pythonanywhere.com" ;
 
   // Sign Up API
   static Future<Map<String, dynamic>> signUp({
@@ -52,6 +53,22 @@ class UserAPI {
       return jsonDecode(response.body);  // Return response data if success
     } else {
       throw Exception('Failed to sign in: ${response.body}');
+    }
+  }
+
+  static Future<bool> deleteUser(String userId) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/delete_user/$userId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+      
     }
   }
 }
