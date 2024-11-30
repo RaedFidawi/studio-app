@@ -205,6 +205,7 @@ class _ClassesState extends State<Classes> {
       children: filteredClasses.map((classData) {
         Uint8List? image = classData['decoded_image'];
         String classId = classData['_id'];
+        String day = classData['day'][0];
 
         return ReservationCard(
           session: ReservationSession(
@@ -212,6 +213,7 @@ class _ClassesState extends State<Classes> {
             time: classData['time'],
             hasSpace: classData['available'],
             image: image,
+            day: day
           ),
         );
       }).toList(),
@@ -226,12 +228,14 @@ class ReservationSession {
   final List<dynamic> time; // Changed to List<dynamic>
   final bool hasSpace;
   final Uint8List? image;
+  final String day;
 
   ReservationSession({
     required this.name,
     required this.time,
     required this.hasSpace,
     this.image,
+    required this.day
   });
 }
 
@@ -312,6 +316,7 @@ class ReservationCard extends StatelessWidget {
                           spacing: 8.0, // Space between chips
                           runSpacing: 4.0, // Space between lines
                           children: [
+                            _buildChip('Day: ${session.day}', Colors.deepPurple),
                             _buildChip('Time: $formattedTime', Colors.black),
                             _buildChip(statusText, statusColor),
                           ],

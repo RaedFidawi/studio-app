@@ -19,9 +19,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final storage = FlutterSecureStorage(); // Secure storage for token
   final String logoUrl = 'assets/logonn.jpeg';
-  final String phone = '+1-555-010-999';
-  final String instagramUrl = 'https://instagram.com/raedfidawi_'; 
-  final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90';
+  final String phone = '70777912';
+  final String instagramUrl = 'https://instagram.com/jfit.stylee'; 
+  // final String locationUrl = 'https://www.google.com/maps/search/?api=1&query=30.19,31.90';
+  final String locationUrl = 'https://www.google.com/maps/place/FortyFour+Tower+-+Lebanon/@33.8805401,35.5395921,17z/data=!3m1!4b1!4m6!3m5!1s0x151f164a58a91ec7:0xe6b9b52817b42dc1!8m2!3d33.8805401!4d35.542167!16s%2Fg%2F11c1ngd4_3?entry=ttu&g_ep=EgoyMDI0MTEyNC4xIKXMDSoASAFQAw%3D%3D';
 
   bool isSignIn = true;
   bool _isSignedIn = false;
@@ -328,7 +329,7 @@ Widget build(BuildContext context) {
                 children: [
                   _buildInfoCard(
                     icon: Icons.location_on,
-                    text: 'Google Maps',
+                    text: 'Sin El Fil, 11th Floor, Bloc A, Jfit studio 1118',
                     color: Color(0xffD4AF37), // Gold icon color
                     onTap: () => _launchURL(locationUrl),
                   ),
@@ -463,34 +464,36 @@ Widget build(BuildContext context) {
                   ),
                 ),
               ),
-            ),Padding(padding: const EdgeInsets.all(3.0)),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _deleteUser,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color.fromARGB(255, 184, 11, 11), Color.fromARGB(255, 255, 81, 0)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Delete Account',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             )
+            // ,
+            // Padding(padding: const EdgeInsets.all(3.0)),
+            // Material(
+            //   color: Colors.transparent,
+            //   child: InkWell(
+            //     onTap: _deleteUser,
+            //     child: Container(
+            //       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            //       decoration: BoxDecoration(
+            //         gradient: LinearGradient(
+            //           colors: [Color.fromARGB(255, 184, 11, 11), Color.fromARGB(255, 255, 81, 0)],
+            //           begin: Alignment.topLeft,
+            //           end: Alignment.bottomRight,
+            //         ),
+            //         borderRadius: BorderRadius.circular(8),
+            //       ),
+            //       child: Center(
+            //         child: Text(
+            //           'Delete Account',
+            //           style: TextStyle(
+            //             color: Colors.white,
+            //             fontWeight: FontWeight.bold,
+            //             fontSize: 16,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // )
           ]
         )
             else
@@ -509,7 +512,7 @@ Widget build(BuildContext context) {
             _buildSignInForm(),
             SizedBox(height: 30),
             Text(
-              'By Harajli',
+              'Jfit studio',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.white.withOpacity(0.6),
